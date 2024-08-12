@@ -11,4 +11,12 @@ const getAccount = async(username = null) => {
     }
 }
 
-export { getAccount }
+const addAccount = (...val) => {
+    try{
+        return val
+    } catch (err){
+        console.log(err)
+    }
+}
+
+export { getAccount, addAccount}

@@ -1,4 +1,4 @@
-import { getAccount } from "../models/AccountModel";
+import { getAccount, addAccount} from "../models/AccountModel";
 
 const login = async (req, res) => {
     if (req.method === "POST") {
@@ -8,7 +8,7 @@ const login = async (req, res) => {
         if (initAccount) {
             res.status(200).json({
                 status:200,
-                message: "Login Success",
+                message: "Login success",
                 token: "asdkjlhfalkdsjfhlskjadfh"
             })
         } else {
@@ -22,4 +22,12 @@ const login = async (req, res) => {
     }
 }
 
-export { login }
+const register = (req, res)=>{
+    if (req.method === "POST") {
+        const data = req.body;
+        const datas = addAccount(data)
+        res.send(datas)
+    }
+}
+
+export { login, register }
