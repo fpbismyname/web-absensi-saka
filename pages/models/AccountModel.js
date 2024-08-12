@@ -1,12 +1,11 @@
 import { db } from "../libs/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 
 const getAccount = async(username = null) => {
     try {
-        const user = username || ""
-        const docRef = doc(db, "data_murid", user)
-        const docSnap = await getDoc(docRef)
-        return docSnap.data()
+        const dataAccount = await getDocs(collection(db, 'data_murid'));
+        const account = dataAccount.docs.map(doc=>doc.data())
+        return account
     } catch (err) {
         console.log(err);
     }

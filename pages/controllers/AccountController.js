@@ -1,10 +1,25 @@
 import { getAccount } from "../models/AccountModel";
 
-const login = async(req, res) =>{
-    if (req.method === "POST"){
-        const { username } = req.body;
-        const dataAccount = await getAccount(username)
+const login = async (req, res) => {
+    if (req.method === "POST") {
+        const {username} = req.body; 
+        const dataAccount = await getAccount()
+        const initAccount = dataAccount.find((account)=>account['username'] === username)
+        if (initAccount) {
+            res.status(200).json({
+                status:200,
+                message: "Login Success",
+                token: "asdkjlhfalkdsjfhlskjadfh"
+            })
+        } else {
+            res.status(401).json({
+                status:401,
+                message: "Invalid username or password"
+            })
+        }
+    } else {
+        res.status(405).json({ status: 405, message: "Method not allowed"})
     }
 }
 
-export {login}
+export { login }
