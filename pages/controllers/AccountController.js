@@ -1,4 +1,5 @@
-import { getAccount, addAccount } from "../models/AccountModel";
+import * as bcrypt from "bcrypt";
+import { getAccount, addAccount, editAccount } from "../models/AccountModel";
 
 const login = async (req, res) => {
     if (req.method === "POST") {
@@ -6,30 +7,26 @@ const login = async (req, res) => {
             const { username, password } = req.body;
             if (username && password) {
                 const dataAccount = await getAccount()
-                if (dataAccount[username]){
-                    const account = dataAccount[username]
-                    if (account['password'] === password){
+                const checkAccount = Object.values(dataAccount).find((user) => user['username'] === username)
+                if (checkAccount) {
+                    if (bcrypt.compareSync(password, checkAccount['password'])) {
                         res.status(200).json({
                             status: 200,
                             message: "Login success"
                         })
                     } else {
                         res.status(401).json({
-                            status:401,
-                            message: "Invalid username or password",
+                            status: 401,
+                            message: "Invalid username or password"
                         })
                     }
-                } else {
-                    res.status(401).json({
-                        status: 401,
-                        message: "Invalid username or password",
-                    })
                 }
             } else {
                 res.send("Username or password are required.")
             }
         } catch (err) {
             res.status(500).json({
+                status: 500,
                 message: "Internal server error",
             })
         }
@@ -38,10 +35,10 @@ const login = async (req, res) => {
     }
 }
 
-const register = (req, res) => {
+const register = async(req, res) => {
     if (req.method === "POST") {
         try {
-            const datas = addAccount(req.body)
+            const datas = await addAccount(req.body)
             if (datas) {
                 res.status(201).json({
                     status: 201,
@@ -54,9 +51,9 @@ const register = (req, res) => {
                 })
             }
         } catch (err) {
-            res.status(400).json({
-                status: 400,
-                message: "Failed to create account",
+            res.status(500).json({
+                status: 500,
+                message: "Internal server error",
             })
         }
     } else {
@@ -64,4 +61,32 @@ const register = (req, res) => {
     }
 }
 
-export { login, register }
+const edit = (req, res) => {
+    if (req.method === "PUT") {
+        try {
+            const idAccount = req.query
+            const datas = editAccount(idAccount, req.body)
+            if (datas) {
+                res.status(200).json({
+                    status: 200,
+                    message: "Account data is Updated",
+                    idAccount
+                })
+            } else {
+                res.status(400).json({
+                    status: 400,
+                    message: "Failed to update account data"
+                })
+            }
+        } catch (err) {
+            res.status(500).json({
+                status: 500,
+                message: "Internal server error"
+            })
+        }
+    } else {
+        res.status(405).json({ status: 405, message: "Method not allowed" })
+    }
+}
+
+export { login, register, edit }
