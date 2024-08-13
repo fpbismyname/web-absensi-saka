@@ -29,7 +29,7 @@ const addAccount = async (AccountData) => {
                 jurusan: jurusan,
                 email: email,
                 username: username,
-                password: password
+                password: hashPassword
             })
             if (add) {
                 return true
